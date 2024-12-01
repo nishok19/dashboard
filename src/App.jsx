@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
+import BarGraph from "./components/BarGraph.jsx";
+import DataTable from "./components/DataTable.jsx";
+import LineGraph from "./components/LineGraph.jsx";
+import PieGraph from "./components/PieGraph.jsx";
+import { getAllData } from "./utils/apiHelper";
+import useWebSocket from "./utils/socketHelper";
+import { useDispatch, useSelector } from "react-redux";
+import { setAllData, setConnectionStatus } from "./store/dashboardSlice.js";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { data, connectionStatus } = useWebSocket();
+  const dispatch = useDispatch();
+  console.log("werwe, ", data);
+
+  useEffect(() => {
+    // getAllData().then((data) => {
+    dispatch(setAllData(data));
+    dispatch(setConnectionStatus(connectionStatus));
+    // });
+  }, [data, connectionStatus]);
+
+  // console.log("dndsafdata , ", storedata);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="h-fit w-screen">
+      <h1 className="mb-4 text-2xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-4xl">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">
+          Realtime Dashboard
+        </span>
+      </h1>
+      {/* 1st row */}
+      <section className="flex items-center justify-between mt-16">
+        <BarGraph />
+        <PieGraph />
+        <LineGraph />
+      </section>
+      <section className="flex justify-center mt-16">
+        <DataTable />
+      </section>
+    </div>
+  );
 }
 
-export default App
+export default App;
